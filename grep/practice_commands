@@ -1,0 +1,7 @@
+- same effect
+grep 'Linux' motd
+perl -wnl -e '/Linux/ and print;' motd
+- data can be retrieved from input file names Or standard input, 
+- which makes pipeline work possible
+cat motd | perl -wnl -e '/Linux/ and print;'
+
