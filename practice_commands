@@ -1,0 +1,59 @@
+============== grep =================
+- same effect
+grep 'Linux' motd
+perl -wnl -e '/Linux/ and print;' motd
+
+- data can be retrieved from input file names Or standard input, 
+- which makes pipeline work possible
+cat motd | perl -wnl -e '/Linux/ and print;'
+
+- display unmatched records
+grep -v 'linux' motd
+
+- search current directory recursively (l option for showing file name only)
+grep -l -r 'linux' .
+
+- using perl to search multiple keywords with any order is more efficient than grep
+- grep/egrep version (note: The symbols \< and \> respectively match the empty string at the beginning and end of a word.)
+egrep '\<ESR\>' projects | egrep '\<SRV\>' | egrep '\<CYA\>'
+- perl version, no pipeline needed
+perl -wnl -e '/\bESR\b/ and /\bSRV\b/ and /\bCYA\b/ and print;' projects
+
+-- paragraph mode
+-- grep cannot show the context of the selected keyword, while perl can use paragraph mode 
+grep 'Consultix' companies 
+perl -00  -wnl -e '/Consultix/ and print;' companies 
+
+============== sed =================
+- sed line specific substitution
+sed '1s/Sun/Sunday/g' beatles 											# 1 for the line number to change
+- perl line specific substitution
+perl -wpl -e '$. == 1 and s/old/new/g;' file   						# 1 for the line number to change
+perl -wpl -e '3 <= $. and $. <= 11 and s/old/new/g;' file   	# edit line 3 - 11 
+perl -wpl -e '$. > 9 and s/old/new/g;' file   							# edit lines 10- last 
+
+- perl paragraph specific substitution, which n/a for sed 
+perl - 00 -wpl - e '$. == 2 and s/\bSun\b/Sunday/g;			# edit paragraph 2 of the file
+                           $. == 2 and s/\bMon\b/Monday/g;' data_east
+						   
+- sed print lines by number													# another popular usage of sed, besides substition
+sed -n '2, $p' beatles															#omit line 1, n for "no automatic printing"
+- perl print lines by number												# very similar to the substition section
+perl -wnl -e '$. == 1 and print;' file   									# line 1
+perl -wnl -e '3 <= $. and $. <= 11 and print;' file			   	# line 3 - 11 
+perl -wnl -e '$. > 9 and print;' file   									# lines 10- last 
+
+- perl print records																# very similar to the substition section
+perl -00 -wnl -e '$. == 2 and print;' file1 file2						# print 2nd paragraph of file 1 and file 2
+per -0777 -wnl -e '$. == 2 and print;' file1 file2					# print 2nd file (file 2)
+
+- sed cannot convert lowercase to uppercase, while perl can 
+perl -wpl -e 's/^.*/\L$&/g;' make_money_fast
+
+- substitution with computed replacement
+perl -wpl -e 's/\d+ $& * 1.6 /ge;'										# e for perl evaluation
+
+- sed to perl (s2p) translator, provided by perl 
+
+- summary: sed is principally used to apply predifined editing commands to text and to print lines by number. But perl out performance 
+by its powerful regex dialect, its greater flexibility support for record mode (paragraph and file) and its ability to in-place editing. 
